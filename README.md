@@ -23,7 +23,7 @@ Put `[lein-garden "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your project.
 Let's suppose you have a project where you are currently using Garden
 for CSS generation. Now, imagine you're so tired of manually
 recompiling your stylesheets or resorting to some other form
-skulduggery that you're thinking of going back to Sass. This causes
+of skulduggery that you're thinking of going back to Sass. This causes
 you to reflect deeply on your life for a moment before realizing
 that it's just negativity talking and get back to hacking.
 
