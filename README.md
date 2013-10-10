@@ -7,7 +7,7 @@ A Leiningen plugin for automatically compiling
 
 This plugin requires Clojure version `1.5.1` or higher.
 
-## Usage
+## Installation
 
 Put `[lein-garden "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your project.clj.
 
