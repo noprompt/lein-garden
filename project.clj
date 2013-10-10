@@ -1,4 +1,4 @@
-(defproject lein-garden "0.1.0"
+(defproject lein-garden "0.1.1-SNAPSHOT"
   :description "A Leiningen plugin for automatically compiling Garden stylesheets"
   :url "https://github.com/noprompt/lein-garden"
   :license {:name "Unlicense"
