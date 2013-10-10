@@ -9,11 +9,11 @@ This plugin requires Clojure version `1.5.1` or higher.
 
 ## Installation
 
-Put `[lein-garden "0.1.0-SNAPSHOT"]` into the `:plugins` vector of your project.clj.
+Put `[lein-garden "0.1.0"]` into the `:plugins` vector of your project.clj.
 
 ```clojure
 (defproject cash-money "1.1.1"
-  :plugins [[lein-garden "0.1.0-SNAPSHOT"]])
+  :plugins [[lein-garden "0.1.0"]])
 ```
 
 ## How do I use this?
@@ -60,7 +60,7 @@ anything.
 
 ```clojure
 (defproject cash-money "1.1.1"
-  :plugins [[lein-garden "0.1.0-SNAPSHOT"]])
+  :plugins [[lein-garden "X.X.X"]])
 ```
 
 To get everything going with `lein garden` you add the remaining
@@ -68,7 +68,7 @@ ingredients.
 
 ```clojure
 (defproject cash-money "1.1.1"
-  :plugins [[lein-garden "0.1.0-SNAPSHOT"]]
+  :plugins [[lein-garden "X.X.X"]]
   :garden {:builds [{;; Optional name of the build.
                      :id "screen"
                      ;; The var containing your stylesheet.
