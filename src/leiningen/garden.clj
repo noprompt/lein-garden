@@ -76,6 +76,16 @@
                                '[me.raynes.fs :as fs]
                                '[clojure.core.async :refer [go chan put! <!]]))))
 
+(defn once
+  "Compile Garden stylesheets once."
+  [project args]
+  (run-compiler project args false))
+
+(defn auto
+  "Automatically recompile when files are modified."
+  [project args]
+  (run-compiler project args true))
+
 (def garden-profile
   {:dependencies '[[org.clojure/clojure "1.5.1"]
                    [garden "1.1.2"]
@@ -84,12 +94,14 @@
 
 (defn garden
   "Compile Garden stylesheets."
+  {:help-arglists '([once auto])
+   :subtasks [#'once #'auto]}
   [project & args]
   (let [project (merge-profiles project [garden-profile])
         [command & args] args]
     (case command
-      "once" (run-compiler project args false)
-      "auto" (run-compiler project args true)
+      "once" (once project args)
+      "auto" (auto project args)
       (do
         (println "Unknown command:" command)
         (main/abort)))))
