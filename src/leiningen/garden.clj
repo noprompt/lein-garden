@@ -4,6 +4,7 @@
             [leiningen.core.classpath :as classpath]
             [leiningen.core.eval :refer [eval-in-project]]
             [leiningen.core.project :refer [merge-profiles]]
+            [leiningen.help :as help]
             [garden.core]
             [me.raynes.fs :as fs]
             [clojure.core.async :refer [chan go <! put!]]))
@@ -12,8 +13,11 @@
   (-> project :garden :builds))
 
 (defn- find-builds [project ids]
-  (let [ids (set ids)]
-    (filter #(ids (:id %)) (builds project))))
+  (let [id? (set ids)]
+    (for [{:keys [id] :as build} (builds project)]
+      (if (id? id)
+        build
+        (throw (Exception. (str "Unknown build identifier: " id)))))))
 
 (defn- load-namespaces [syms]
   `(require
@@ -86,7 +90,15 @@
   [project args]
   (run-compiler project args true))
 
-(def garden-profile
+(defn- validate-builds [project]
+  (doseq [{:keys [stylesheet]} (builds project)]
+    (cond
+     (nil? stylesheet)
+     (throw (Exception. "No stylesheet specified."))
+     (not (symbol? stylesheet))
+     (throw (Exception. "Stylesheet must be a symbol")))))
+
+(def ^:private garden-profile
   {:dependencies '[[org.clojure/clojure "1.5.1"]
                    [garden "1.1.2"]
                    [me.raynes/fs "1.4.4"]
@@ -99,9 +111,12 @@
   [project & args]
   (let [project (merge-profiles project [garden-profile])
         [command & args] args]
+    (validate-builds project)
     (case command
       "once" (once project args)
       "auto" (auto project args)
       (do
-        (println "Unknown command:" command)
+        (println
+         (when command (str "Unknown command:" command))
+         (help/subtask-help-for *ns* #'garden))
         (main/abort)))))
