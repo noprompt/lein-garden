@@ -34,32 +34,32 @@
 (defn- compile-build [project build watch?]
   (let [stylesheet (:stylesheet build)
         flags (:compiler build)]
- `(let [file# ~(locate-file project build)]
-    (if ~watch?
-      (let [c# ((fn watch-file# [file#]
-                  (let [mtime-chan# (chan 1)
-                        mtime# (fs/mod-time file#)]
-                    (go (loop [old-mtime# mtime# new-mtime# mtime#]
-                          (when (not= old-mtime# new-mtime#)
-                            (put! mtime-chan# new-mtime#))
-                          (recur new-mtime# (fs/mod-time file#))))
-                    mtime-chan#))
-                file#)]
-        (go (while true
-              (when (<! c#)
-                (try
-                  (load-file (str file#))
-                  (garden.core/css ~flags ~stylesheet)
-                  (catch Exception e#
-                    (println "Error:" (.getMessage e#))))
-                (flush))))
-        (put! c# 0) ; Kick off the compiler.
-        (loop []
-          (Thread/sleep 100)
-          (recur)))
-      (do
-        (garden.core/css ~(:compiler build) ~(:stylesheet build))
-        nil)))))
+    `(let [file# ~(locate-file project build)]
+       (if ~watch?
+         (let [c# ((fn watch-file# [file#]
+                     (let [mtime-chan# (chan 1)
+                           mtime# (fs/mod-time file#)]
+                       (go (loop [old-mtime# mtime# new-mtime# mtime#]
+                             (when (not= old-mtime# new-mtime#)
+                               (put! mtime-chan# new-mtime#))
+                             (recur new-mtime# (fs/mod-time file#))))
+                       mtime-chan#))
+                   file#)]
+           (go (while true
+                 (when (<! c#)
+                   (try
+                     (load-file (str file#))
+                     (garden.core/css ~flags ~stylesheet)
+                     (catch Exception e#
+                       (println "Error:" (.getMessage e#))))
+                   (flush))))
+           (put! c# 0) ; Kick off the compiler.
+           (loop []
+             (Thread/sleep 100)
+             (recur)))
+         (do
+           (garden.core/css ~(:compiler build) ~(:stylesheet build))
+           nil)))))
 
 (defn- run-compiler [project args watch?]
   (let [builds (if (seq args)
@@ -68,13 +68,13 @@
         requires (load-namespaces (map :stylesheet builds))]
     (println "Compiling Garden...")
     (eval-in-project project
-      `(do
-          ~requires
-          ~@(for [build builds]
-              (compile-build project build watch?)))
-      '(require 'garden.core
-                '[me.raynes.fs :as fs]
-                '[clojure.core.async :refer [go chan put! <!]]))))
+                     `(do
+                        ~requires
+                        ~@(for [build builds]
+                            (compile-build project build watch?)))
+                     '(require 'garden.core
+                               '[me.raynes.fs :as fs]
+                               '[clojure.core.async :refer [go chan put! <!]]))))
 
 (def garden-profile
   {:dependencies '[[org.clojure/clojure "1.5.1"]
