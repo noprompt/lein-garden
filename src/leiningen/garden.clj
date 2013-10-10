@@ -80,12 +80,12 @@
                                '[me.raynes.fs :as fs]
                                '[clojure.core.async :refer [go chan put! <!]]))))
 
-(defn once
+(defn- once
   "Compile Garden stylesheets once."
   [project args]
   (run-compiler project args false))
 
-(defn auto
+(defn- auto
   "Automatically recompile when files are modified."
   [project args]
   (run-compiler project args true))
