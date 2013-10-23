@@ -46,6 +46,7 @@
                        (go (loop [old-mtime# mtime# new-mtime# mtime#]
                              (when (not= old-mtime# new-mtime#)
                                (put! mtime-chan# new-mtime#))
+                             (Thread/sleep 500)
                              (recur new-mtime# (fs/mod-time file#))))
                        mtime-chan#))
                    file#)]
@@ -59,7 +60,7 @@
                    (flush))))
            (put! c# 0) ; Kick off the compiler.
            (loop []
-             (Thread/sleep 100)
+             (Thread/sleep 500)
              (recur)))
          (do
            (garden.core/css ~(:compiler build) ~(:stylesheet build))
