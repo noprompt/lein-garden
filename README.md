@@ -9,7 +9,7 @@ This plugin requires Clojure version `1.5.1` or higher.
 
 ## Installation
 
-Put `[lein-garden "0.1.0"]` into the `:plugins` vector of your project.clj.
+Put `[lein-garden "0.1.1"]` into the `:plugins` vector of your project.clj.
 
 ```clojure
 (defproject cash-money "1.1.1"
