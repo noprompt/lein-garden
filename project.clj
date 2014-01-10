@@ -6,4 +6,5 @@
   :eval-in-leiningen true
   :dependencies [[garden "1.1.2"]
                  [me.raynes/fs "1.4.4"]
-                 [org.clojure/core.async "0.1.222.0-83d0c2-alpha"]])
+                 [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
+                 [clojure-watch "0.1.9"]])
