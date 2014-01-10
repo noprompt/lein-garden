@@ -7,7 +7,7 @@
             [leiningen.help :as help]
             [garden.core]
             [me.raynes.fs :as fs]
-            [clojure.core.async :refer [chan go <! put!]]))
+            [clojure.core.async :refer [chan go <! put! timeout]]))
 
 (defn- builds [project]
   (-> project :garden :builds))
@@ -37,7 +37,8 @@
 
 (defn- compile-build [project build watch?]
   (let [stylesheet (:stylesheet build)
-        flags (:compiler build)]
+        flags (:compiler build)
+        interval 500]
     `(let [file# ~(locate-file project build)]
        (if ~watch?
          (let [c# ((fn watch-file# [file#]
@@ -46,7 +47,7 @@
                        (go (loop [old-mtime# mtime# new-mtime# mtime#]
                              (when (not= old-mtime# new-mtime#)
                                (put! mtime-chan# new-mtime#))
-                             (Thread/sleep 500)
+                             (<! (timeout ~interval))
                              (recur new-mtime# (fs/mod-time file#))))
                        mtime-chan#))
                    file#)]
@@ -60,7 +61,7 @@
                    (flush))))
            (put! c# 0) ; Kick off the compiler.
            (loop []
-             (Thread/sleep 500)
+             (Thread/sleep ~interval)
              (recur)))
          (do
            (garden.core/css ~(:compiler build) ~(:stylesheet build))
