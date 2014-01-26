@@ -29,7 +29,7 @@ that it's just negativity talking and get back to hacking.
 
 ### Chapter 1
 
-*You open `~/cash-money/src/cash-money/core.clj`.*
+*You open `~/cash-money/src/cash_money/core.clj`.*
 
 ```clojure
 (ns cash-money.core
@@ -73,14 +73,14 @@ ingredients.
                      :id "screen"
                      ;; The var containing your stylesheet.
                      :stylesheet cash-money.core/screen
-                     ;; Compiler flags passed to `garden.core/css`
+                     ;; Compiler flags passed to `garden.core/css`.
                      :compiler {;; Where to save the file.
                                 :output-to "resources/screen.css"
                                 ;; Compress the output?
                                 :pretty-print? false}}]})
 ```
 
-Next, you open `~/cash-money/src/cash-money/core.clj` and make the
+Next, you open `~/cash-money/src/cash_money/core.clj` and make the
 make a small change.
 
 ```clojure
