@@ -1,5 +1,6 @@
 (ns leiningen.garden
   (:require [clojure.pprint :refer [pprint]]
+            [clojure.java.io :as io]
             [leiningen.core.main :as main]
             [leiningen.core.classpath :as classpath]
             [leiningen.core.eval :refer [eval-in-project]]
@@ -11,6 +12,9 @@
 
 (defn- builds [project]
   (-> project :garden :builds))
+
+(defn- output-path [build]
+  (-> build :compiler :output-to))
 
 (defn- find-builds [project ids]
   (let [id? (set ids)]
@@ -35,7 +39,27 @@
               file#)))
         ~source-paths))))
 
+(defn- assert-flags [build]
+  (when-not (output-path build)
+    (println "No output file specified.")
+    (main/abort)))
+
+(defn- ensure-output-directory-exists [build]
+  (let [dir (-> (output-path build)
+                io/file
+                fs/absolute-path
+                fs/parent)]
+    (when-not (fs/exists? dir)
+      (when-not (fs/mkdirs dir)
+        (println "Could not create directory" dir)
+        (main/abort)))))
+
+(defn- prepare-build [build]
+  (ensure-output-directory-exists build)
+  (assert-flags build))
+
 (defn- compile-build [project build watch?]
+  (prepare-build build)
   (let [stylesheet (:stylesheet build)
         flags (:compiler build)
         interval 500]
