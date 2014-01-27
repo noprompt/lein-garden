@@ -1,14 +1,15 @@
 (ns leiningen.garden
-  (:require [clojure.pprint :refer [pprint]]
-            [clojure.java.io :as io]
-            [leiningen.core.main :as main]
-            [leiningen.core.classpath :as classpath]
-            [leiningen.core.eval :refer [eval-in-project]]
-            [leiningen.core.project :refer [merge-profiles]]
-            [leiningen.help :as help]
-            [garden.core]
-            [me.raynes.fs :as fs]
-            [clojure.core.async :refer [chan go <! put! timeout]]))
+  (:require
+   [clojure.pprint :refer [pprint]]
+   [clojure.java.io :as io]
+   [leiningen.core.main :as main]
+   [leiningen.core.classpath :as classpath]
+   [leiningen.core.eval :refer [eval-in-project]]
+   [leiningen.core.project :refer [merge-profiles]]
+   [leiningen.help :as help]
+   [garden.core]
+   [me.raynes.fs :as fs]))
+
 
 (defn- builds [project]
   (-> project :garden :builds))
@@ -63,33 +64,24 @@
   (let [stylesheet (:stylesheet build)
         flags (:compiler build)
         interval 500]
-    `(let [file# ~(locate-file project build)]
-       (if ~watch?
-         (let [c# ((fn watch-file# [file#]
-                     (let [mtime-chan# (chan 1)
-                           mtime# (fs/mod-time file#)]
-                       (go (loop [old-mtime# mtime# new-mtime# mtime#]
-                             (when (not= old-mtime# new-mtime#)
-                               (put! mtime-chan# new-mtime#))
-                             (<! (timeout ~interval))
-                             (recur new-mtime# (fs/mod-time file#))))
-                       mtime-chan#))
-                   file#)]
-           (go (while true
-                 (when (<! c#)
-                   (try
-                     (load-file (str file#))
-                     (garden.core/css ~flags ~stylesheet)
-                     (catch Exception e#
-                       (println "Error:" (.getMessage e#))))
-                   (flush))))
-           (put! c# 0) ; Kick off the compiler.
-           (loop []
-             (Thread/sleep ~interval)
-             (recur)))
-         (do
-           (garden.core/css ~(:compiler build) ~(:stylesheet build))
-           nil)))))
+    `(if-not ~watch?
+       (do (garden.core/css ~flags ~stylesheet)
+           nil)
+       (let [modified-namespaces# (ns-tracker/ns-tracker '~(:source-paths project))]
+         (loop []
+           (let [ns# (modified-namespaces#)]
+             (when (seq ns#)
+               (try
+                 (doseq [ns-sym# ns#]
+                   (require ns-sym# :reload))
+                 (println "Compiling" '~stylesheet "to" ~(:output-to flags))
+                 (garden.core/css ~flags ~stylesheet)
+                 (println "Successful")
+                 (catch Exception e#
+                   (println "Error:" (.getMessage e#))))
+               (flush)))
+           (Thread/sleep ~interval)
+           (recur))))))
 
 (defn- run-compiler [project args watch?]
   (let [builds (if (seq args)
@@ -102,9 +94,8 @@
                         ~requires
                         ~@(for [build builds]
                             (compile-build project build watch?)))
-                     '(require 'garden.core
-                               '[me.raynes.fs :as fs]
-                               '[clojure.core.async :refer [go chan put! <!]]))))
+                     '(require '[garden.core]
+                               '[ns-tracker.core :as ns-tracker]))))
 
 (defn- once
   "Compile Garden stylesheets once."
@@ -125,10 +116,8 @@
      (throw (Exception. "Stylesheet must be a symbol")))))
 
 (def ^:private garden-profile
-  {:dependencies '[[org.clojure/clojure "1.5.1"]
-                   [garden "1.1.2"]
-                   [me.raynes/fs "1.4.4"]
-                   [org.clojure/core.async "0.1.222.0-83d0c2-alpha"]]})
+  {:dependencies '[[garden "1.1.5"]
+                   [ns-tracker "0.2.1"]]})
 
 (defn garden
   "Compile Garden stylesheets."
