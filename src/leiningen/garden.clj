@@ -10,7 +10,6 @@
    [garden.core]
    [me.raynes.fs :as fs]))
 
-
 (defn- builds [project]
   (-> project :garden :builds))
 
@@ -24,26 +23,21 @@
         build
         (throw (Exception. (str "Unknown build identifier: " id)))))))
 
+(defn- validate-builds [project]
+  (doseq [{:keys [id stylesheet :as build]} (builds project)]
+    (cond
+     (nil? stylesheet)
+     (throw (Exception. (format "No stylesheet specified in build %s. " (name id))))
+     (not (symbol? stylesheet))
+     (throw (Exception. (format ":stylesheet value must be a symbol in build %s." (name id))))
+     (nil? (output-path build))
+     (throw (Exception. (format "No :output-to file specified in build %s." (name id)))))))
+
+;; I'm unsure if this is actually necessary.
 (defn- load-namespaces [syms]
   `(require
     ~@(for [sym syms]
         `'~(-> sym namespace symbol))))
-
-(defn- locate-file [project build]
-  (let [stylesheet (:stylesheet build)
-        source-paths (vec (:source-paths project))]
-    `(let [filename# (:file (meta #'~stylesheet))]
-       (some
-        (fn [path#]
-          (let [file# (fs/file path# filename#)]
-            (when (fs/file? file#)
-              file#)))
-        ~source-paths))))
-
-(defn- assert-flags [build]
-  (when-not (output-path build)
-    (println "No output file specified.")
-    (main/abort)))
 
 (defn- ensure-output-directory-exists [build]
   (let [dir (-> (output-path build)
@@ -56,8 +50,7 @@
         (main/abort)))))
 
 (defn- prepare-build [build]
-  (ensure-output-directory-exists build)
-  (assert-flags build))
+  (ensure-output-directory-exists build))
 
 (defn- compile-build [project build watch?]
   (prepare-build build)
@@ -107,13 +100,7 @@
   [project args]
   (run-compiler project args true))
 
-(defn- validate-builds [project]
-  (doseq [{:keys [stylesheet]} (builds project)]
-    (cond
-     (nil? stylesheet)
-     (throw (Exception. "No stylesheet specified."))
-     (not (symbol? stylesheet))
-     (throw (Exception. "Stylesheet must be a symbol")))))
+
 
 (def ^:private garden-profile
   {:dependencies '[[garden "1.1.5"]
