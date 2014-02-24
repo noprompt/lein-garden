@@ -69,19 +69,18 @@ ingredients.
 ```clojure
 (defproject cash-money "1.1.1"
   :plugins [[lein-garden "X.X.X"]]
-  :garden {:builds [{;; Optional name of the build.
+  :garden {:builds [{;; Optional name of the build:
                      :id "screen"
-                     ;; The var containing your stylesheet.
+                     ;; The var containing your stylesheet:
                      :stylesheet cash-money.core/screen
-                     ;; Compiler flags passed to `garden.core/css`.
-                     :compiler {;; Where to save the file.
+                     ;; Compiler flags passed to `garden.core/css`:
+                     :compiler {;; Where to save the file:
                                 :output-to "resources/screen.css"
                                 ;; Compress the output?
                                 :pretty-print? false}}]})
 ```
 
-Next, you open `~/cash-money/src/cash_money/core.clj` and make the
-make a small change.
+Next, you open `~/cash-money/src/cash_money/core.clj` and make a small change.
 
 ```clojure
 (ns cash-money.core
