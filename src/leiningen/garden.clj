@@ -17,14 +17,14 @@
   (-> build :compiler :output-to))
 
 (defn- find-builds [project ids]
-  (let [id? (set ids)]
-    (for [{:keys [id] :as build} (builds project)]
-      (if (id? id)
+  (let [all-builds (builds project)]
+    (for [id ids]
+      (if-let [build (first (filter #(= (:id %) id) all-builds))]
         build
         (throw (Exception. (str "Unknown build identifier: " id)))))))
 
 (defn- validate-builds [project]
-  (doseq [{:keys [id stylesheet :as build]} (builds project)]
+  (doseq [{:keys [id stylesheet] :as build} (builds project)]
     (cond
      (nil? stylesheet)
      (throw (Exception. (format "No stylesheet specified in build %s. " (name id))))
@@ -81,14 +81,15 @@
                  (find-builds project args)
                  (builds project))
         requires (load-namespaces (map :stylesheet builds))]
-    (println "Compiling Garden...")
-    (eval-in-project project
-                     `(do
-                        ~requires
-                        ~@(for [build builds]
-                            (compile-build project build watch?)))
-                     '(require '[garden.core]
-                               '[ns-tracker.core :as ns-tracker]))))
+    (when (seq builds)
+      (println "Compiling Garden...")
+      (eval-in-project project
+                       `(do
+                          ~requires
+                          ~@(for [build builds]
+                              (compile-build project build watch?)))
+                       '(require '[garden.core]
+                                 '[ns-tracker.core :as ns-tracker])))))
 
 (defn- once
   "Compile Garden stylesheets once."
