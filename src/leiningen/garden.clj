@@ -52,29 +52,29 @@
 (defn- prepare-build [build]
   (ensure-output-directory-exists build))
 
-(defn- compile-build [project build watch?]
-  (prepare-build build)
-  (let [stylesheet (:stylesheet build)
-        flags (:compiler build)
-        interval 500]
-    `(if-not ~watch?
-       (do (garden.core/css ~flags ~stylesheet)
-           nil)
-       (let [modified-namespaces# (ns-tracker/ns-tracker '~(:source-paths project))]
-         (loop []
-           (let [ns# (modified-namespaces#)]
-             (when (seq ns#)
+(defn- compile-builds [project builds watch?]
+  (let [interval 500
+        ;; Initial list of namespaces.
+        nss (map (comp symbol namespace :stylesheet) builds)]
+    `(let [modified-namespaces# (ns-tracker/ns-tracker '~(:source-paths project))
+           builds# (list ~@builds)]
+       (loop [nss# '~nss]
+         (when (seq nss#)
+           (doseq [build# builds#]
+             (let [stylesheet# (:stylesheet build#)
+                   flags# (:compiler build#)]
                (try
-                 (doseq [ns-sym# ns#]
+                 (doseq [ns-sym# nss#]
                    (require ns-sym# :reload))
-                 (println "Compiling" '~stylesheet "to" ~(:output-to flags))
-                 (garden.core/css ~flags ~stylesheet)
+                 (println (str "Compiling " (pr-str (:output-to flags#)) "..."))
+                 (garden.core/css flags# stylesheet#)
                  (println "Successful")
                  (catch Exception e#
-                   (println "Error:" (.getMessage e#))))
-               (flush)))
+                   (println "Error:" (.getMessage e#))))))
+           (flush))
+         (when ~watch?
            (Thread/sleep ~interval)
-           (recur))))))
+           (recur (modified-namespaces#)))))))
 
 (defn- run-compiler [project args watch?]
   (let [builds (if (seq args)
@@ -82,12 +82,12 @@
                  (builds project))
         requires (load-namespaces (map :stylesheet builds))]
     (when (seq builds)
+      (doseq [build builds] (prepare-build build))
       (println "Compiling Garden...")
       (eval-in-project project
                        `(do
                           ~requires
-                          ~@(for [build builds]
-                              (compile-build project build watch?)))
+                          ~(compile-builds project builds watch?))
                        '(require '[garden.core]
                                  '[ns-tracker.core :as ns-tracker])))))
 
