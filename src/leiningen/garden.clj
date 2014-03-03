@@ -55,22 +55,26 @@
 (defn- compile-builds [project builds watch?]
   (let [interval 500
         ;; Initial list of namespaces.
-        nss (map (comp symbol namespace :stylesheet) builds)]
+        nss (map (comp symbol namespace :stylesheet) builds)
+        builds (map
+                (fn [build]
+                  (let [s (:stylesheet build)]
+                    (assoc build :stylesheet `(var ~s))))
+                builds)]
     `(let [modified-namespaces# (ns-tracker/ns-tracker '~(:source-paths project))
            builds# (list ~@builds)]
        (loop [nss# '~nss]
          (when (seq nss#)
            (doseq [build# builds#]
-             (let [stylesheet# (:stylesheet build#)
-                   flags# (:compiler build#)]
-               (try
-                 (doseq [ns-sym# nss#]
-                   (require ns-sym# :reload))
+             (try
+               (doseq [ns-sym# nss#] (require ns-sym# :reload))
+               (let [stylesheet# (deref (:stylesheet build#))
+                     flags# (:compiler build#)]
                  (println (str "Compiling " (pr-str (:output-to flags#)) "..."))
                  (garden.core/css flags# stylesheet#)
-                 (println "Successful")
-                 (catch Exception e#
-                   (println "Error:" (.getMessage e#))))))
+                 (println "Successful"))
+               (catch Exception e#
+                 (println "Error:" (.getMessage e#)))))
            (flush))
          (when ~watch?
            (Thread/sleep ~interval)
