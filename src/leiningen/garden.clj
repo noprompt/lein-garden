@@ -7,6 +7,8 @@
    [leiningen.core.eval :refer [eval-in-project]]
    [leiningen.core.project :refer [merge-profiles]]
    [leiningen.help :as help]
+   [leiningen.compile :as lcompile]
+   [robert.hooke :as hooke]
    [garden.core]
    [me.raynes.fs :as fs]))
 
@@ -127,3 +129,21 @@
          (when command (str "Unknown command:" command))
          (help/subtask-help-for *ns* #'garden))
         (main/abort)))))
+
+
+;; Hooks are executed multiple times for some reason
+;; Found this workaround in cljx
+(def ^:private hooked (promise))
+
+(defn- compile-hook [task & args]
+  (when-not (realized? hooked)
+    (deliver hooked true)
+    (let [project (merge-profiles (first args) [garden-profile])]
+      (validate-builds project)
+      (once project (next args))))
+  (apply task args))
+
+(defn activate
+  "Setup hooks for the plugin"
+  []
+  (hooke/add-hook #'lcompile/compile #'compile-hook))
