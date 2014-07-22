@@ -101,3 +101,16 @@ $ lein garden auto
 ```
 
 and behold as your stylesheet is automatically recompiled on save.
+
+## Chapter 3
+
+Now you might want stylesheets to always compile whenever starting your program with leiningen. 
+Add this to your `project.clj`
+
+```:hooks [leiningen.garden]```
+
+You might not want your stylesheets to compile beforetest-runs. 
+Perhaps what you really wanted, is to compile stylesheets before creating a jar. 
+You can use profiles to do this.
+
+```:profiles {:uberjar {:hooks [leiningen.garden]}}```
