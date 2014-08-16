@@ -4,6 +4,6 @@
   :license {:name "Unlicense"
             :url "http://unlicense.org/UNLICENSE"}
   :eval-in-leiningen true
-  :dependencies [[garden "1.1.5"]
+  :dependencies [[garden "1.2.1"]
                  [me.raynes/fs "1.4.4"]
-                 [ns-tracker "0.2.1"]])
+                 [ns-tracker "0.2.2"]])
