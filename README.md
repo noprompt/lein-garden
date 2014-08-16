@@ -11,11 +11,6 @@ This plugin requires Clojure version `1.5.1` or higher.
 
 Put `[lein-garden "0.2.0"]` into the `:plugins` vector of your project.clj.
 
-```clojure
-(defproject cash-money "1.1.1"
-  :plugins [[lein-garden "0.1.9"]])
-```
-
 ## How do I use this?
 
 ### Preface
