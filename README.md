@@ -5,7 +5,8 @@ A Leiningen plugin for automatically compiling
 
 ## Requirements
 
-This plugin requires Clojure version `1.5.1` or higher.
+This plugin requires Clojure version `1.6.0` or higher and Leiningen 
+version `2.4.3` or higher.
 
 ## Installation
 
