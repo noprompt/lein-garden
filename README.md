@@ -83,6 +83,7 @@ Next, you open `~/cash-money/src/cash_money/core.clj` and make a small change.
   (:require [garden.def :refer [defstylesheet defstyles]]
             [garden.units :refer [px]]))
 
+;; Change defstylesheet to defstyles.
 (defstyles screen
   [:body
    {:font-family "sans-serif"
