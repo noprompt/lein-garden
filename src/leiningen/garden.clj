@@ -26,8 +26,10 @@
         (throw (Exception. (str "Unknown build identifier: " id)))))))
 
 (defn- validate-builds [project]
-  (doseq [{:keys [id stylesheet] :as build} (builds project)]
+  (doseq [{:keys [id stylesheet source-paths] :as build} (builds project)]
     (cond
+     (nil? source-paths)
+     (throw (Exception. (format "No source-paths specified in build %s. " (name id))))
      (nil? stylesheet)
      (throw (Exception. (format "No stylesheet specified in build %s. " (name id))))
      (not (symbol? stylesheet))
@@ -86,14 +88,16 @@
   (let [builds (if (seq args)
                  (find-builds project args)
                  (builds project))
+        paths (vec (distinct (flatten (map #(% :source-paths) builds))))
+        modified-project (update-in project [:source-paths] (fn [src-path] paths))
         requires (load-namespaces (map :stylesheet builds))]
     (when (seq builds)
       (doseq [build builds] (prepare-build build))
       (println "Compiling Garden...")
-      (eval-in-project project
+      (eval-in-project modified-project
                        `(do
                           ~requires
-                          ~(compile-builds project builds watch?))
+                          ~(compile-builds modified-project builds watch?))
                        '(require '[garden.core]
                                  '[ns-tracker.core :as ns-tracker])))))
 
