@@ -5,12 +5,12 @@ A Leiningen plugin for automatically compiling
 
 ## Requirements
 
-This plugin requires Clojure version `1.6.0` or higher and Leiningen 
+This plugin requires Clojure version `1.6.0` or higher and Leiningen
 version `2.4.3` or higher.
 
 ## Installation
 
-Put `[lein-garden "0.2.0"]` into the `:plugins` vector of your project.clj.
+Put `[lein-garden "0.2.1"]` into the `:plugins` vector of your project.clj.
 
 ## How do I use this?
 
