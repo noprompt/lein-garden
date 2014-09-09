@@ -67,6 +67,8 @@ ingredients.
   :plugins [[lein-garden "X.X.X"]]
   :garden {:builds [{;; Optional name of the build:
                      :id "screen"
+                     ;; Source paths where the stylesheet source code is
+                     :source-paths ["src/styles"]
                      ;; The var containing your stylesheet:
                      :stylesheet cash-money.core/screen
                      ;; Compiler flags passed to `garden.core/css`:
