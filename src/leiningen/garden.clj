@@ -9,7 +9,6 @@
    [leiningen.help :as help]
    [leiningen.compile :as lcompile]
    [robert.hooke :as hooke]
-   [garden.core]
    [me.raynes.fs :as fs]))
 
 (defn- builds [project]
