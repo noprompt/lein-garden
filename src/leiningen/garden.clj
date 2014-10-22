@@ -8,6 +8,7 @@
    [leiningen.core.project :refer [merge-profiles]]
    [leiningen.help :as help]
    [leiningen.compile :as lcompile]
+   [leiningen.clean :as lclean]
    [robert.hooke :as hooke]
    [me.raynes.fs :as fs]))
 
@@ -110,6 +111,18 @@
   [project args]
   (run-compiler project args true))
 
+(defn- clean
+  "Removes compiled Garden stylesheets"
+  [project args]
+  (let [builds (if (seq args)
+                 (find-builds project args)
+                 (builds project))
+        paths (distinct (map #(get-in % [:compiler :output-to]) builds))]
+    (println "Cleaning Garden...")
+    (doseq [file paths]
+      (println "Removing file:" file)
+      (io/delete-file file true))))
+
 
 
 (def ^:private garden-profile
@@ -118,8 +131,8 @@
 
 (defn garden
   "Compile Garden stylesheets."
-  {:help-arglists '([once auto])
-   :subtasks [#'once #'auto]}
+  {:help-arglists '([once auto clean])
+   :subtasks [#'once #'auto #'clean]}
   [project & args]
   (let [project (merge-profiles project [garden-profile])
         [command & args] args]
@@ -127,6 +140,7 @@
     (case command
       "once" (once project args)
       "auto" (auto project args)
+      "clean" (clean project args)
       (do
         (println
          (when command (str "Unknown command:" command))
@@ -134,19 +148,26 @@
         (main/abort)))))
 
 
-;; Hooks are executed multiple times for some reason
+;; Compile hook is executed multiple times for some reason
 ;; Found this workaround in cljx
-(def ^:private hooked (promise))
+(def ^:private compiled? (atom false))
 
 (defn- compile-hook [task & args]
-  (when-not (realized? hooked)
-    (deliver hooked true)
+  (when-not @compiled?
+    (reset! compiled? true)
     (let [project (merge-profiles (first args) [garden-profile])]
       (validate-builds project)
       (once project (next args))))
   (apply task args))
 
+(defn- clean-hook [task & args]
+  (let [project (merge-profiles (first args) [garden-profile])]
+    (validate-builds project)
+    (clean project (next args)))
+  (apply task args))
+
 (defn activate
   "Setup hooks for the plugin"
   []
-  (hooke/add-hook #'lcompile/compile #'compile-hook))
+  (hooke/add-hook #'lcompile/compile #'compile-hook)
+  (hooke/add-hook #'lclean/clean #'clean-hook))
