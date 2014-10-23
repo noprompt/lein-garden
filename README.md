@@ -113,3 +113,11 @@ Perhaps what you really wanted, is to compile stylesheets before creating a jar.
 You can use profiles to do this.
 
 ```:profiles {:uberjar {:hooks [leiningen.garden]}}```
+
+### Chapter 4
+
+Finally, to remove any compiled stylesheets, simply run
+
+```shell
+$ lein garden clean
+```
