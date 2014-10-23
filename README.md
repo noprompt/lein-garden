@@ -10,7 +10,7 @@ version `2.4.3` or higher.
 
 ## Installation
 
-Put `[lein-garden "0.2.2"]` into the `:plugins` vector of your project.clj.
+Put `[lein-garden "0.2.3"]` into the `:plugins` vector of your project.clj.
 
 ## How do I use this?
 
