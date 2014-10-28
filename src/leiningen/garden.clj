@@ -88,8 +88,8 @@
   (let [builds (if (seq args)
                  (find-builds project args)
                  (builds project))
-        paths (vec (distinct (flatten (map #(% :source-paths) builds))))
-        modified-project (update-in project [:source-paths] (fn [src-path] paths))
+        build-paths (mapcat :source-paths builds)
+        modified-project (update-in project [:source-paths] concat build-paths)
         requires (load-namespaces (map :stylesheet builds))]
     (when (seq builds)
       (doseq [build builds] (prepare-build build))
