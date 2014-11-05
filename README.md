@@ -78,7 +78,7 @@ ingredients.
                                 :pretty-print? false}}]})
 ```
 
-Next, you open `~/cash-money/src/cash_money/core.clj` and make a small change.
+Next, you open `~/cash-money/src/styles/cash_money/core.clj` and make a small change.
 
 ```clojure
 (ns cash-money.core
