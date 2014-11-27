@@ -26,7 +26,8 @@
         (throw (Exception. (str "Unknown build identifier: " id)))))))
 
 (defn- validate-builds [project]
-  (doseq [{:keys [id stylesheet source-paths] :as build} (builds project)]
+  (doseq [{:keys [id stylesheet source-paths] :or {id "undefined"} :as build}
+            (builds project)]
     (cond
      (nil? source-paths)
      (throw (Exception. (format "No source-paths specified in build %s. " (name id))))
