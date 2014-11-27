@@ -68,7 +68,7 @@ ingredients.
   :garden {:builds [{;; Optional name of the build:
                      :id "screen"
                      ;; Source paths where the stylesheet source code is
-                     :source-paths ["src/styles"]
+                     :source-paths ["src/styles"] ; MANDATORY in lein-garden 0.2.x
                      ;; The var containing your stylesheet:
                      :stylesheet cash-money.core/screen
                      ;; Compiler flags passed to `garden.core/css`:
