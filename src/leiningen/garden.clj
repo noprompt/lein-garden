@@ -89,7 +89,12 @@
                  (find-builds project args)
                  (builds project))
         build-paths (mapcat :source-paths builds)
-        modified-project (update-in project [:source-paths] concat build-paths)
+        modified-project (-> project
+                             (select-keys [:dependencies
+                                           :plugin
+                                           :source-paths
+                                           :garden])
+                             (update-in [:source-paths] concat build-paths))
         requires (load-namespaces (map :stylesheet builds))]
     (when (seq builds)
       (doseq [build builds] (prepare-build build))
