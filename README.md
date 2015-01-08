@@ -6,7 +6,7 @@ A Leiningen plugin for automatically compiling
 ## Requirements
 
 This plugin requires Clojure version `1.6.0` or higher and Leiningen
-version `2.4.3` or higher.
+version `2.5.0` or higher.
 
 ## Installation
 
@@ -106,18 +106,8 @@ and behold as your stylesheet is automatically recompiled on save.
 Now you might want stylesheets to always compile whenever starting your program with leiningen.
 Add this to your `project.clj`
 
-```:hooks [leiningen.garden]```
-
-You might not want your stylesheets to compile before test-runs.
-Perhaps what you really wanted, is to compile stylesheets before creating a jar.
-You can use profiles to do this.
-
-```:profiles {:uberjar {:hooks [leiningen.garden]}}```
+```:prep-tasks [["garden" "once"]]```
 
 ### Chapter 4
 
-Finally, to remove any compiled stylesheets, simply run
-
-```shell
-$ lein garden clean
-```
+To remove css on `lein clean`, you should add the compiled files to `:clean-targets` in your `project.clj`
