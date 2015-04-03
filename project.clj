@@ -3,6 +3,7 @@
   :url "https://github.com/noprompt/lein-garden"
   :license {:name "Unlicense"
             :url "http://unlicense.org/UNLICENSE"}
+  :min-lein-version "2.5.0"
   :eval-in-leiningen true
   :dependencies [[garden "1.2.1"]
                  [me.raynes/fs "1.4.4"]
