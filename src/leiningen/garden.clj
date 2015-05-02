@@ -89,7 +89,6 @@
         modified-project (-> project
                              (select-keys [:dependencies
                                            :plugin
-                                           :source-paths
                                            :garden])
                              (update-in [:source-paths] concat build-paths))
         requires (load-namespaces (map :stylesheet builds))]
