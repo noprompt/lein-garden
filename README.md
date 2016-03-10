@@ -8,9 +8,11 @@ A Leiningen plugin for automatically compiling
 This plugin requires Clojure version `1.6.0` or higher and Leiningen
 version `2.5.0` or higher.
 
-## Installation
+### Installation
 
-Put `[lein-garden "0.2.6"]` into the `:plugins` vector of your project.clj.
+Add the following dependency to the `:plugins` vector of your `project.clj`.
+
+[![Clojars Project](https://img.shields.io/clojars/v/lein-garden.svg)](https://clojars.org/lein-garden)
 
 ## How do I use this?
 
