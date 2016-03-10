@@ -43,7 +43,7 @@
 (defn- ensure-output-directory-exists [build]
   (let [dir (-> (output-path build)
                 io/file
-                fs/absolute-path
+                fs/absolute
                 fs/parent)]
     (when-not (fs/exists? dir)
       (when-not (fs/mkdirs dir)
