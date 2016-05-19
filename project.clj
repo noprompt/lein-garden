@@ -6,5 +6,5 @@
   :min-lein-version "2.5.0"
   :eval-in-leiningen true
   :dependencies [[garden "1.3.1"]
-                 [me.raynes/fs "1.4.4"]
+                 [me.raynes/fs "1.4.6"]
                  [ns-tracker "0.3.0"]])
