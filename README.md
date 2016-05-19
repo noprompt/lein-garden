@@ -3,6 +3,11 @@
 A Leiningen plugin for automatically compiling
 [Garden](https://github.com/noprompt/garden) stylesheets.
 
+## Help!
+
+This project is looking for team members! Please open an issue if
+you would like to support this project by joining the team.
+
 ## Requirements
 
 This plugin requires Clojure version `1.6.0` or higher and Leiningen
