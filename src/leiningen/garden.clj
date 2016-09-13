@@ -90,7 +90,8 @@
                              (select-keys [:dependencies
                                            :plugin
                                            :local-repo
-                                           :garden])
+                                           :garden
+                                           :repositories])
                              (update-in [:source-paths] concat build-paths))
         requires (load-namespaces (map :stylesheet builds))]
     (when (seq builds)
