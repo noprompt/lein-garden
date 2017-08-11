@@ -25,14 +25,16 @@
 (defn- validate-builds [project]
   (doseq [{:keys [id stylesheet source-paths] :as build} (builds project)]
     (cond
-     (nil? source-paths)
-     (throw (Exception. (format "No source-paths specified in build %s. " (name id))))
-     (nil? stylesheet)
-     (throw (Exception. (format "No stylesheet specified in build %s. " (name id))))
-     (not (symbol? stylesheet))
-     (throw (Exception. (format ":stylesheet value must be a symbol in build %s." (name id))))
-     (nil? (output-path build))
-     (throw (Exception. (format "No :output-to file specified in build %s." (name id)))))))
+      (not (string? id))
+      (throw (Exception. "Build's id must be a string"))
+      (nil? source-paths)
+      (throw (Exception. (format "No source-paths specified in build %s. " (name id))))
+      (nil? stylesheet)
+      (throw (Exception. (format "No stylesheet specified in build %s. " (name id))))
+      (not (symbol? stylesheet))
+      (throw (Exception. (format ":stylesheet value must be a symbol in build %s." (name id))))
+      (nil? (output-path build))
+      (throw (Exception. (format "No :output-to file specified in build %s." (name id)))))))
 
 ;; I'm unsure if this is actually necessary.
 (defn- load-namespaces [syms]
