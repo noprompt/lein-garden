@@ -25,8 +25,8 @@
 (defn- validate-builds [project]
   (doseq [{:keys [id stylesheet source-paths] :as build} (builds project)]
     (cond
-      (nil? id)
-      (throw (Exception. "Build must have an id"))
+      (not (string? id))
+      (throw (Exception. "Build's id must be a string"))
       (nil? source-paths)
       (throw (Exception. (format "No source-paths specified in build %s. " (name id))))
       (nil? stylesheet)
