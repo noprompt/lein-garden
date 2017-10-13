@@ -91,7 +91,8 @@
                                            :plugin
                                            :local-repo
                                            :garden
-                                           :repositories])
+                                           :repositories
+                                           :mirrors])
                              (update-in [:source-paths] concat build-paths))
         requires (load-namespaces (map :stylesheet builds))]
     (when (seq builds)
