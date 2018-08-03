@@ -87,12 +87,6 @@
                  (builds project))
         build-paths (mapcat :source-paths builds)
         modified-project (-> project
-                             (select-keys [:dependencies
-                                           :plugin
-                                           :local-repo
-                                           :garden
-                                           :repositories
-                                           :mirrors])
                              (update-in [:source-paths] concat build-paths))
         requires (load-namespaces (map :stylesheet builds))]
     (when (seq builds)
